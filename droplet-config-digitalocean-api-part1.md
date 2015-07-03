@@ -43,7 +43,7 @@ Servers can authenticate with a variety of methods. Although passwords suffice, 
 
 SSH (Secure Shell) key authentication is a secure alternative. It involves two keys: the public key and private key. The private key is kept on the local machine and should never be shared. It can optionally be encrypted with a passphrase which limits its use if an unauthorized user gains access to it. The public key can be shared freely without any negative repercussions. It is used to encrypt any messages that only the private key can decrypt. This public-private pairing is a system that the majority of the world’s communication uses!
 
-In your terminal session on the local machine, generate an SSH key with: 'ssh-keygen'
+In your terminal session on the local machine, generate an SSH key with: `ssh-keygen`
 
 You will see the following output:
 
@@ -71,7 +71,7 @@ This is an optional passphrase that will be used to encrypt the private key. If 
 
 Now that we have generated an SSH key, we need to “link” the key between our local machine and the DigitalOcean droplet we created earlier. 
 
-First, we need to SSH into our droplet and change the default password: 'ssh *root@droplet-ip*'
+First, we need to SSH into our droplet and change the default password: `ssh *root@droplet-ip*`
 
 Because this is the first time connecting to the droplet, you will see a message such as the following:
 
@@ -85,7 +85,7 @@ Once connected, you will be prompted for the current passphrase twice. This is a
 
 After finishing, log out of the droplet by holding down CTRL followed by D.
 
-Now we need to link the SSH keys to the droplet. The command ‘ssh-copy-id’ will run a script on our droplet that will accomplish this.
+Now we need to link the SSH keys to the droplet. The command `ssh-copy-id` will run a script on our droplet that will accomplish this.
 
 In a terminal session on the local machine:
 
