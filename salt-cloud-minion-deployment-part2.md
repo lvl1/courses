@@ -112,12 +112,6 @@ Add the following to the bottom of the file and change the red to the public dom
 
 ## Configure Cloud Providers and Profiles
 
-We need to create two new directories that will hold our provider configuration and our droplet profiles.
-Make the new directories:
-
-    mkdir /etc/salt/cloud.profiles.d
-    mkdir /etc/salt/cloud.providers.d
-
 The cloud provider configuration file specifies what provider to connect to and controls access to your DigitalOcean account:
 
     vim /etc/salt/cloud.providers.d/digitalocean.conf
