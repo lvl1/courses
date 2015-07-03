@@ -164,7 +164,7 @@ Add the following. Later on, you can add as many different profiles as you want.
 
 Now we’re ready to make our first droplet! Simply execute the following command, and put in whatever name you would like for the minion:
 
-    salt-cloud -p ubuntu_512MB _ny3 minion1
+    salt-cloud -p ubuntu_512MB_ny3 minion1
 
 Note: If you are getting permission denied, make sure you are using a unique name for your ssh key. Open related issue: https://github.com/saltstack/salt/issues/25079
 
