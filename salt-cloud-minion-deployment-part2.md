@@ -117,6 +117,7 @@ The cloud provider configuration file specifies what provider to connect to and 
     vim /etc/salt/cloud.providers.d/digitalocean.conf
 
 Add the following to the digitalocean.conf file:
+
     do:
       provider: digital_ocean
       # DigitalOcean account keys
