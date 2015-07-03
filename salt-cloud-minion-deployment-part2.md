@@ -4,7 +4,7 @@ Salt is a very useful set of software that allows commands to be executed across
 
 ## Install Salt Master and Minion
 
-If you’re not already connected to your droplet, SSH in with:
+If you're not already connected to your droplet, SSH in with:
 
     ssh root@droplet-ip     
 
@@ -35,11 +35,11 @@ Next, we need modify the salt minion config file. We will do so by using vim, a 
 
     vim /etc/salt/minion
 
-Using the arrow keys, navigate to the line that begins with ‘#master:’. Press ‘i’ to edit. Uncomment the line by removing the ‘#’. Next, the option to ’localhost’ so that the line resembles the following:
+Using the arrow keys, navigate to the line that begins with `#master:`. Press `i` to edit. Uncomment the line by removing the `#`. Next, the option to `localhost` so that the line resembles the following:
 
     master: localhost
 
-This tells the minion software to find the master on the local machine. Save and exit by pressing “ESC” followed by entering “:wq” and then pressing return.
+This tells the minion software to find the master on the local machine. Save and exit by pressing "ESC" followed by entering ":wq" and then pressing return.
 
 To apply our changes, we need to restart the salt minion:
 
@@ -51,7 +51,7 @@ When the minion is created, it tries to connect to the master with a unique key.
 
     salt-key -L
 
-Your droplet’s name should show up under unaccepted keys similar to the following:
+Your droplet's name should show up under unaccepted keys similar to the following:
 
     Accepted Keys:
     Denied Keys:
@@ -59,11 +59,11 @@ Your droplet’s name should show up under unaccepted keys similar to the follow
     droplet-name
     Rejected Keys:
 
-Now we need to have the master accept the minion’s public keys:
+Now we need to have the master accept the minion's public keys:
 
-    salt-key -a ‘droplet-name’
+    salt-key -a 'droplet-name'
 
-Now that we have accepted the minion, we can check that it responds. The ‘*’ means “all minions” and can be substituted for any specific minion name:
+Now that we have accepted the minion, we can check that it responds. The '*' means "all minions" and can be substituted for any specific minion name:
 
     salt '*' test.ping
 
@@ -137,11 +137,11 @@ For more information on these commands, and others like them, you can use:
 
     salt-cloud --help
 
-Edit the cloud profiles file. The profiles file holds “templates” of droplets that you may need to spin up:
+Edit the cloud profiles file. The profiles file holds "templates" of droplets that you may need to spin up:
 
     vim /etc/salt/cloud.profiles.d/digital_ocean.conf
 
-Add the following. Later on, you can add as many different profiles as you want. Simply replace the GREEN sections with valid options (these options can be found with the above ‘salt-cloud --list’ commands):
+Add the following. Later on, you can add as many different profiles as you want. Simply replace the GREEN sections with valid options (these options can be found with the above `salt-cloud --list` commands):
 
     ubuntu_512MB_ny3:
         provider: do
@@ -162,7 +162,7 @@ Add the following. Later on, you can add as many different profiles as you want.
 
 ## Deploy Our First Minion
 
-Now we’re ready to make our first droplet! Simply execute the following command, and put in whatever name you would like for the minion:
+Now we're ready to make our first droplet! Simply execute the following command, and put in whatever name you would like for the minion:
 
     salt-cloud -p ubuntu_512MB_ny3 minion1
 
