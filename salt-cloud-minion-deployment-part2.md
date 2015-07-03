@@ -39,7 +39,7 @@ Using the arrow keys, navigate to the line that begins with `#master:`. Press `i
 
     master: localhost
 
-This tells the minion software to find the master on the local machine. Save and exit by pressing "ESC" followed by entering ":wq" and then pressing return.
+This tells the minion software to find the master on the local machine. Save and exit by pressing `ESC` followed by entering `:wq` and then pressing return.
 
 To apply our changes, we need to restart the salt minion:
 
@@ -63,7 +63,7 @@ Now we need to have the master accept the minion's public keys:
 
     salt-key -a 'droplet-name'
 
-Now that we have accepted the minion, we can check that it responds. The '*' means "all minions" and can be substituted for any specific minion name:
+Now that we have accepted the minion, we can check that it responds. The `*` means "all minions" and can be substituted for any specific minion name:
 
     salt '*' test.ping
 
