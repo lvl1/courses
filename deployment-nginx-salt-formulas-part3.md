@@ -7,14 +7,14 @@ Nginx (pronounced “engine x”) is a simple web server that we will set up on 
 Make sure you are connected to your Salt master. You should see a prompt similar to the following:
 
 ```
-root@salt-master:~#
+saltuser@salt-master:~#
 ```
 
 We’ll start by creating our nginx.sls file. The naming of this file is arbitrary: we only need to have it match our top.sls file later on. 
 
 ```
-mkdir /srv/salt/
-vim /srv/salt/nginx.sls
+sudo mkdir /srv/salt/
+sudo vim /srv/salt/nginx.sls
 ```
 
 The nginx.sls file is what we define as a “state”. Within that state is the instructions we want it to include. We define these parameters within the file:
@@ -43,7 +43,7 @@ Let’s break this down line by line. The first three lines specify that the ngi
 Now we need to make our custom html file. 
 
 ```
-vim /srv/salt/nginx/index.html
+sudo vim /srv/salt/nginx/index.html
 ```
 
 If you desire, you can change the following html to anything you would like on your webserver!
@@ -62,7 +62,7 @@ If you desire, you can change the following html to anything you would like on y
 Now that we have created our state and html file, we need a way for the master to determine what states it should apply to each minion. To do this, we will create a top.sls file. Salt looks to find this file in the /srv/salt/ directory.
 
 ```
-vim /srv/salt/top.sls
+sudo vim /srv/salt/top.sls
 ```
 
 Write this into the file:
