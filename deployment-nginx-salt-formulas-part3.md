@@ -82,7 +82,7 @@ For this example, we have a default base environment. When the minion is told to
 Now apply this state by executing the following command on the salt master:
 
 ```
-salt 'minion1' state.highstate
+sudo salt 'minion1' state.highstate
 ```
 
 This applies the top.sls file to minion1. You should see a success message such as the following:
@@ -98,9 +98,62 @@ Total states run: 	3
 
 Check that everything worked as expected by going to the ip address of your minion in your browser (the minion ip can be found in the DigitalOcean control panel).
 
+##Additionally (Configure Minion with User Account and SSH Keys)
+
+You can run a state for your minion that will configure a new user and SSH keys. We will do this in one state file called ‘user.sls’. 
+
+Because we have already configured SSH keys on the Salt master for saltuser, we can copy the public SSH key from the master to the minion using our state file. In order for Salt to access the public key, we need to copy it to the salt directory. 
+
+Log into the master as saltuser. Start by making a new directory to store the key in:
+
+`sudo mkdir /srv/salt/keys`
+
+Next, make a copy of the SSH key in the new directory:
+
+`sudo cp /home/saltuser/.ssh/authorized_keys /srv/salt/keys/minion_key`
+
+All that’s left is creating the user.sls file:
+
+`sudo vim /srv/salt/user.sls`
+
+Add the following to the file:
+```
+minionuser:
+  user.present:
+    - fullname: Minion User
+    - shell: /bin/bash
+    - home: /home/minionuser
+    - groups:
+      - sudo
+/home/minionuser/.ssh:
+  file.directory:
+    - user: minionuser
+    - group: minionuser
+    - mode: 700
+/home/minionuser/.ssh/authorized_keys:
+  file:
+    - managed
+    - user: minionuser
+    - group: minionuser
+    - source: salt://keys/minion_key
+    - mode: 600
+```
+The first section of this file creates a user. A fullname is specified, as well as what shell should be used (bash). The home folder was created and minionuser was added to the sudo group.
+
+The second section makes an SSH directory. Ownership of the directory is given to minionuser and the appropriate permissions are set (mode: 700 = read, write ,and execute). 
+
+The final section copies the SSH key from the master to the minion. We make a file in the /home/minionuser/.ssh/ directory called authorized\_keys that comes from the source of salt://keys/minion\_key on the master. Again, ownership is given to minionuser and permissions are set to 600 for read and write (note that proper file and directory permissions must be set in order for SSH to function correctly).
+
+After saving the file, execute the following command to apply the new state:
+
+`sudo salt 'www1' state.highstate`
+
+Connect into your minion to confirm that it uses SSH keys to login!
 
 
-##Resources:
+
+
+Resources:
 
 https://www.digitalocean.com/community/tutorials/how-to-use-the-digitalocean-api-v2
 https://developers.digitalocean.com/documentation/v2
@@ -111,3 +164,5 @@ https://www.digitalocean.com/community/tutorials/automated-provisioning-of-digit
 https://www.digitalocean.com/community/tutorials/how-to-create-your-first-salt-formula
 http://bencane.com/2013/09/03/getting-started-with-saltstack-by-example-automatically-installing-nginx/
 http://ingloriousdevops.com/2014/10/14/do-you-want-more-flavor-add-more-salt/
+http://docs.saltstack.com/en/latest/ref/states/all/salt.states.file.html
+http://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html#management-of-user-accounts
