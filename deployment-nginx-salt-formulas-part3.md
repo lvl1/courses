@@ -150,8 +150,59 @@ After saving the file, execute the following command to apply the new state:
 
 Connect into your minion to confirm that it uses SSH keys to login!
 
+##What I did for pillar:
 
+/srv/pillar/top.sls
+```
+base:
+  'www1':
+    - users
+```
+/srv/pillar/users.sls
+```
+users:
+  jdonas:
+    fullname: My Name
+    groups:
+      - sudo
+    pub_ssh_keys:
+      - ssh key
+```
+/srv/salt/users.sls
+```
+{% for username, details in pillar.get('users', {}).items() %}
+{{ username }}:
+  user.present:
+    - fullname: {{ details.get('fullname','') }}
+    - name: {{ username }}
+    - shell: /bin/bash
+    - home: /home/{{ username }}
+    {% if 'groups' in details %}
+    - groups:
+      {% for group in details.get('groups', []) %}
+      - {{ group }}
+      {% endfor %}
+    {% endif %}
 
+  {% if 'pub_ssh_keys' in details %}
+  ssh_auth.present:
+    - user: {{ username }}
+    - names:
+    {% for pub_ssh_key in details.get('pub_ssh_keys', []) %}
+      - {{ pub_ssh_key }}
+    {% endfor %}
+    - require:
+      - user: {{ username }}
+  {% endif %}
+
+{% endfor %}
+```
+Then ran:
+```
+salt '*' saltutil.refresh_pillar
+salt '*' pillar.items
+salt ‘*’ state.highstate
+```
 
 Resources:
 
