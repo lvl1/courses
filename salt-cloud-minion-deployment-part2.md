@@ -6,26 +6,26 @@ Salt is a very useful set of software that allows commands to be executed across
 
 If you're not already connected to your droplet, SSH in with:
 
-    ssh root@droplet-ip     
+    ssh saltuser@droplet-ip     
 
-First we need to update the package database, to get an up-to-date list of software that is available:
+First we need to update the package database, to get an up-to-date list of software that is available. For any command that requires root access, we need to prepend ‘sudo’ to the command:
 
-    apt-get update
+    sudo apt-get update
 
 Add saltstack PPA (Personal Package Archive) and python dependencies. This is where we will install Salt from:
 
-    apt-get install python-software-properties
-    add-apt-repository ppa:saltstack/salt
+    sudo apt-get install python-software-properties
+    sudo add-apt-repository ppa:saltstack/salt
 
 Hit enter when prompted
 
 Next, re-update the package database to get packages from the PPA we just added:
 
-    apt-get update
+    sudo apt-get update
 
 Salt operates with a master-minion structure. The master is the central administration hub that manages any number of minions. We eventually want to be able to do all the configuration on the master and push those configurations to the minions. Enter the following to install Salt master and minion:
 
-    apt-get install salt-master salt-minion
+    sudo apt-get install salt-master salt-minion
 
 We are installing both the master and the minion on one device so that we can manage the droplet from itself! This may seem trivial, but it means that we can make the master manageable. For example, we may have multiple minions and want to push a new configuration to them as well as the master. Installing the minion software on the master allows for this. 
 
@@ -33,7 +33,7 @@ We are installing both the master and the minion on one device so that we can ma
 
 Next, we need modify the salt minion config file. We will do so by using vim, a command-line text editor:
 
-    vim /etc/salt/minion
+    sudo vim /etc/salt/minion
 
 Using the arrow keys, navigate to the line that begins with `#master:`. Press `i` to edit. Uncomment the line by removing the `#`. Next, the option to `localhost` so that the line resembles the following:
 
@@ -43,7 +43,7 @@ This tells the minion software to find the master on the local machine. Save and
 
 To apply our changes, we need to restart the salt minion:
 
-    service salt-minion restart
+    sudo service salt-minion restart
 
 ## Connect Minion to Master
 
@@ -73,11 +73,11 @@ Now we need to configure SSH key authentication between DigitalOcean and our Sal
 
 Make a directory on the master to store the keys in:
 
-    mkdir /etc/salt/keys
+    sudo mkdir /etc/salt/keys
 
 Next, make an ssh keypair with:
 
-    ssh-keygen -f /etc/salt/keys/DigitalOcean-Key
+    sudo ssh-keygen -f /etc/salt/keys/DigitalOcean-Key
 
 You will be prompted through a process similar to the SSH keys we configured earlier. For our purposes, do not specify an optional passphrase. 
 
@@ -93,7 +93,7 @@ You will need to put your full public key in place of SaltPublicKey. You can obt
 
 Salt-Cloud is a sub-unit of the Salt package that controls the provisioning of minions. Install salt-cloud with:
 
-    apt-get install salt-cloud
+    sudo apt-get install salt-cloud
 
 Check that salt-cloud was installed:
 
@@ -101,7 +101,7 @@ Check that salt-cloud was installed:
 
 We now need to edit the cloud configuration file so that future minions will be pointed to the correct master. The cloud configuration file is given to the minion when it is created and tells it what master to connect to.
 
-    vim /etc/salt/cloud
+    sudo vim /etc/salt/cloud
 
 Add the following to the bottom of the file and change the red to the public domain name or ip address of your droplet
 
@@ -114,7 +114,7 @@ Add the following to the bottom of the file and change the red to the public dom
 
 The cloud provider configuration file specifies what provider to connect to and controls access to your DigitalOcean account:
 
-    vim /etc/salt/cloud.providers.d/digitalocean.conf
+    sudo vim /etc/salt/cloud.providers.d/digitalocean.conf
 
 Add the following to the digitalocean.conf file:
 
@@ -139,7 +139,7 @@ For more information on these commands, and others like them, you can use:
 
 Edit the cloud profiles file. The profiles file holds "templates" of droplets that you may need to spin up:
 
-    vim /etc/salt/cloud.profiles.d/digital_ocean.conf
+    sudo vim /etc/salt/cloud.profiles.d/digital_ocean.conf
 
 Add the following. Later on, you can add as many different profiles as you want. Simply replace the GREEN sections with valid options (these options can be found with the above `salt-cloud --list` commands):
 
