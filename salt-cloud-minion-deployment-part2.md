@@ -1,3 +1,7 @@
+Title: Salt tutorial part 2
+Date: 2015-07-08 11:45
+Category: Tutorial
+
 # Salt-Cloud (Part 2 of 3)
 
 Salt is a very useful set of software that allows commands to be executed across multiple servers simultaneously. This central administration allows many remote systems to be controlled with ease. This section will cover the installation of a Salt master and minion.

@@ -1,3 +1,7 @@
+Title: Salt tutorial part 3
+Date: 2015-07-08 11:45
+Category: Tutorial
+
 #Deployment of Nginx Using Salt Formulas (Part 3 of 3)
 
 Nginx (pronounced “engine x”) is a simple web server that we will set up on our Salt minion. We will accomplish this using Salt states. Salt allows you to define a top.sls file that holds the instructions for what packages (such as nginx) will be installed on the minion.
