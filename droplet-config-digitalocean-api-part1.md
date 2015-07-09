@@ -27,12 +27,12 @@ We’ll begin by creating a DigitalOcean access token. This token will be used t
 
 Curl is a linux command line tool used to transfer data from or to a server. We will use it to access DigitalOcean’s API, without actually opening their site in a browser.
 
-For the remainder of this tutorial, *ITALICISED* values signifies values that will work as shown but can also be changed to suit your needs. **BOLD** values signifies values that will be unique to your configuration and must be changed.
+For the remainder of this tutorial, *ITALICISED* values signifies values that will work as shown but can also be changed to suit your needs. **BOLD** values signifies values that will be unique to your configuration and must be changed.
 
 Open a terminal session on your linux machine and execute the following command:
 
     curl -X POST "https://api.digitalocean.com/v2/droplets" \
-        -d'{"name":"*salt-master*","region":"nyc3","size":"512mb","image":"ubuntu-14-04-x64"}'\
+        -d'{"name":"salt-master","region":"nyc3","size":"512mb","image":"ubuntu-14-04-x64"}'\
         -H "Authorization: Bearer YourToken" \
         -H "Content-Type: application/json"
 
@@ -42,8 +42,8 @@ If you see:
 
 Check to make sure your token is correct
 
-Note: Make sure to give your droplet a meaningful name! It is good practice to do so; someone looking at your setup should be able to get a general idea as to what each droplet does just by reading its name.
-
+> Note: Make sure to give your droplet a meaningful name! It is good practice to do so; someone looking at your setup should be able to get a general idea as to what each droplet does just by reading its name.
+
 This creates a basic droplet named `Salt-Master`, in the New-York 3 location, with 512MB of RAM (which comes with a 20GB disk space), running Ubuntu 14.04.
 
 ##Configure SSH Key Authentication
