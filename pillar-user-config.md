@@ -1,3 +1,5 @@
+Title: Pillars Tutorial Date: 2015-07-14 10:09 Category: Tutorial
+
 #Salt Pillars Tutorial
 
 *This tutorial is an alternative, more advanced method of the additional configuration at the end of Part 3.*
