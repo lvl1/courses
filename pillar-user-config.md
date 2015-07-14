@@ -1,4 +1,6 @@
-Title: Pillars Tutorial Date: 2015-07-14 10:09 Category: Tutorial
+Title: Pillar Tutorial
+Date: 2015-07-14 10:14
+Category: Tutorial
 
 #Salt Pillars Tutorial
 
