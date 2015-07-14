@@ -64,7 +64,7 @@ Add the following to the file:
 {% endfor %}
 ```
 Woah! Suddenly things just got a lot more complex! This file uses Jinja which is a Python templating language. Although it looks scary, the contents of this file accomplish a simple task. The Jinja code loops over the users.sls pillar file and actually creates the user on the minion. For example, if we had specified five different users in our users.sls pillar file, then the Jinja code would have looped over five times and created five different user accounts.
-You can read more about Jinja [here](http://jinja.pocoo.org/)
+> You can read more about Jinja [here](http://jinja.pocoo.org/)
 
 All that is left is to apply our new pillar information. Run the following commands:
 ```
