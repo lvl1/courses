@@ -16,7 +16,7 @@ Each individual component will be explained in detail in the remainder of the tu
 
 ##Configuring a SQL database
 
-`sudo apt-get update`
+`sudo apt-get update python-mysqldb`
 
 `sudo apt-get install mysql-server`
 
@@ -157,17 +157,14 @@ pip install uwsgi
 Test with:
 
 `uwsgi --wsgi-file /opt/comments/comments.py --callable app -s 127.0.0.1:8080`
+
+add to bottom of /etc/init/supervisord.conf:
 ```
-#Supervisor
-
-vim /etc/init/uwsgi.conf:
-description "uwsgi tiny instance"
-start on runlevel [2345]
-stop on runlevel [06]
-
-respawn
-
-exec uwsgi --wsgi-file /opt/comments/comments.py --callable app -s 127.0.0.1:8080
+[program:uwsgi]
+command=uwsgi --wsgi-file /opt/comments/comments.py --callable app -s 127.0.0.1:8080
+autostart=true
+autorestart=true
+startsecs=2
 ```
 
 vim /etc/init/supervisor.conf
