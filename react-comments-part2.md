@@ -1,3 +1,7 @@
+Title: React Comments Part2
+Date: 2015-07-24 12:36
+Category: Tutorial
+
 #React Comments
 
 `vim /usr/share/nginx/html/comments.py`
