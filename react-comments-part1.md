@@ -1,7 +1,3 @@
-Title: React Comments Part1
-Date: 2015-07-27 12:26
-Category: Tutorial
-
 #NGINX, uWSGI, Falcon, Supervisor Tutorial
 
 Our end goal - a dynamic React comment box in a static Pelican Blog - requires multiple components. At the front end, NGINX handles the initial browser requests. It will act as a reverse-proxy that will pass on requests to uWSGI. uWSGI will allow us to run multiple threads of Falcon in the background. Falcon is a python framework that provides a groundwork for building our own custom API. This custom API will, in turn, be used to update and query a MySQL database (which will hold the information used in our comment system, such as comments and emails).
@@ -114,27 +110,29 @@ Although it is not required for this tutorial (we will be using falcon to add in
 ```
 INSERT INTO `comments_table` (`id`,`comment`,`name`,`timestamp`) VALUES (NULL, "Hello!", "FalconLover", NULL);
 ```
-Read more about MySQL here: https://www.digitalocean.com/community/tutorials/a-basic-mysql-tutorial 
-Or here: http://dev.mysql.com/doc/
+Read more about MySQL [here](https://www.digitalocean.com/community/tutorials/a-basic-mysql-tutorial)
+Or [here](http://dev.mysql.com/doc/)
 
 ##Falcon
 
-In a production environment, thousands of requests may be made to a web server at a time. This puts a heavy load on the server application which is trying to respond to the thousands of requests on a first-come, first-serve basis. The solution to this problem is using a threaded “application container” to manage the requests. To accomplish this threading (also known as multi-process) we will use uWSGI. We are choosing uWSGI because of it’s built-in support for integration with NGINX. Threading allows us to have potentially thousands of Falcon instances running simultaneously.
+In order for the comments system to interact with the SQL database, there must be a quick method of communication between the two. Falcon is a lightweight, web framework that we will use to build a cloud API (Application Program Interface). This API will allow us to use JSON (JavaScript Object Notation) data to update the SQL database. For now, we will focus on getting falcon to display a custom message when we browse to the url of the server. JSON will be explained in more detail in future sections of this tutorial.
 
 Run the following commands to install falcon using pip. Pip is a package manager that is an alternative to apt-get.
 ```
 sudo apt-get install python-pip
 sudo pip install falcon --upgrade
 ```
-To do a quick test of Falcon, we are going to make a project folder in /opt. We will later be 
+To do a quick test of Falcon, we are going to make a project folder in /opt. We will later be placing our Falcon files in the NGINX directory.
+```
 sudo mkdir /opt/comments/
+```
+Now create a file called comments.py. Falcon is configured using Python.
 ```
 vim /opt/comments/comments.py:
 ```
 ```
 # comments.py
 # Let's get this party started
-
 
 import falcon
 
@@ -153,17 +151,32 @@ app = falcon.API()
 # Resources are represented by long-lived class instances
 comments = CommentsResource()
 
-# things will handle all requests to the '/things' URL path
+# sqlaccess will handle all requests to the '/sqlaccess' URL path
 app.add_route('/sqlaccess', comments)
 ```
 
+
+This code accomplishes a simple task. A class called CommentsResource is created that handles HTTP GET requests. It returns an HTTP status of 200 which is the default for “success”. It also returns a quote from Immanuel Kant in a response body, which is displayed in the browser when accessed.
+The last three sections of code are very important. app = falcon.API() creates a falcon instance that will be accessible with uWSGI. This instance is essentially the interaction point between Falcon and uWSGI.
+The comments line assigns the CommentsResource class to a variable called comments.
+Lastly, app.add_route says “if the /sqlaccess URL is accessed, use the comments (aka CommentsResource) class to deal with the request”.
+
+You can explore more about Python [here](https://www.python.org/doc/)
+You can explore more about Falcon Framework [here](http://falcon.readthedocs.org/en/stable/)
+
 ##NGINX
+
+In our setup, NGINX serves as a reverse proxy. Essentially, a reverse proxy retrieves information from an alternate source and then presents that information as if it came from itself. This provides a few benefits for us. Firstly, it acts as an extra layer of security. Outside users are not directly interacting with Falcon and instead are accessing NGINX first. This leads into the second benefit. Users can access our site directly from a browser without the added complexity of accessing our api!
+
+We will begin by installing nginx on the server.
 ```
 sudo apt-get install nginx
 ```
 
-comment line “include /etc/nginx/sites-enabled/*;” in /etc/nginx/nginx.conf
-add to bottom of http { } section of /etc/nginx/nginx.conf:
+There is only one file that needs to be edited for our nginx configuration. Within /etc/nginx/nginx.conf, comment the line “include /etc/nginx/sites-enabled/*;” at the bottom of the http { } section. 
+Right after our newly commented line (#include /etc/nginx/sites-enabled/*;), copy and paste the following into the file:
+
+
 ```         
         # Configuration for Nginx
         server {
@@ -202,23 +215,48 @@ add to bottom of http { } section of /etc/nginx/nginx.conf:
         }
     } 
 ```
+There are a few important things to take away from this file. NGINX is told to listen on port 80 (the standard port for web requests). In terms of proxying, NGINX passes information on to 127.0.0.1:8080  when the /sqlacess URL is accessed. Simply put, 127.0.0.1:8080 refers to the loopback address on the local machine (NGINX essentially passes the information on to itself but at port 8080).
+
+To put these new changes into effect, issue the following command:
 ```
 sudo service nginx restart
 ```
+
+That is it for the NGINX configuration. Now we will finish up with uWSGI.
+
 ##uWSGI
+
+
+In a production environment, thousands of requests may be made to a web server at a time. This puts a heavy load on the server application which is trying to respond to the thousands of requests on a first-come, first-serve basis. With our current setup, only one Falcon instance would be able to run at a time, which is inefficient.
+
+The solution to this problem is using a threaded “application container” to manage the requests. To accomplish this threading (also known as multi-process) we will use uWSGI. We are choosing uWSGI because of it’s built-in support for integration with NGINX and Falcon. Threading allows us to have potentially thousands of Falcon instances running simultaneously.
+
+
+Begin by installing python dependencies and uWSGI.
 ```
 sudo apt-get install python-dev
 sudo pip install uwsgi
 ```
-Test with:
+Finally, we can test our entire configuration with this simple command:
 ```
 uwsgi --wsgi-file /opt/comments/comments.py --callable app -s 127.0.0.1:8080
 ```
-Supervisor
+This tells uWSGI to execute our comments.py file (for falcon) when it is called from port 8080. Recall that we are using NGINX to pass information to this port!
+
+Browse to http://your-server-ip/sqlaccess. You should now see the message we set!
+
+##Supervisor
+
+It is evidently a hassle to have to run the above “uwsgi…” command whenever we want our site to be available. To solve this, we are going to run uWSGI on startup so that it is always running, even when the machine is rebooted. 
+
+To accomplish this, we will use Supervisor:
 ```
 sudo apt-get install supervisor
 ```
-add to bottom of /etc/supervisor/supervisord.conf:
+FIrst we need to add configuration to the bottom of /etc/supervisor/supervisord.conf:
+```
+sudo vim /etc/supervisor/supervisord.conf
+```
 ```
 [program:uwsgi]
 command=uwsgi --wsgi-file /opt/comments/comments.py --callable app -s 127.0.0.1:8080
@@ -226,6 +264,10 @@ autostart=true
 autorestart=true
 startsecs=2
 ```
+
+This runs the same command that we were running earlier! The difference is that we now have autostart and autorestart set to true. This will ensure that uWSGI is running whenever the server is booted.
+
+Next, we need to enable supervisor to start on boot: 
 ```
 vim /etc/init/supervisor.conf
 ```
@@ -244,10 +286,21 @@ pre-start script
 end script
 exec /usr/bin/supervisord
 ```
+This simply starts supervisor similar to how we are starting uWSGI.
 
-Now reboot
+Now reboot the server.
 ```
 sudo reboot
 ```
-Browse to yourip/sqlaccess
 
+When the server is back up, browse to http://your-server-ip/sqlaccess. If all went well, you should see the same message we saw earlier.
+
+Whenever our comments.py file is changed, uWSGI must be restarted for changes to be put into effect. Rather than reboot the server, the following supervisor commands can be issued.
+```
+sudo supervisorctl stop uwsgi
+sudo supervisorctl start uwsgi
+```
+Alternatively, you can use:
+```
+sudo supervisorctl restart uwsgi
+```
