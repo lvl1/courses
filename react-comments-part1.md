@@ -1,3 +1,7 @@
+Title: React Comments Part1
+Date: 2015-07-28 10:25
+Category: Tutorial
+
 #NGINX, uWSGI, Falcon, Supervisor Tutorial
 
 Our end goal - a dynamic React comment box in a static Pelican Blog - requires multiple components. At the front end, NGINX handles the initial browser requests. It will act as a reverse-proxy that will pass on requests to uWSGI. uWSGI will allow us to run multiple threads of Falcon in the background. Falcon is a python framework that provides a groundwork for building our own custom API. This custom API will, in turn, be used to update and query a MySQL database (which will hold the information used in our comment system, such as comments and emails).
