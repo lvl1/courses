@@ -35,7 +35,7 @@ sudo vim /usr/lib/python2.7/dist-packages/pelican/themes/notmyidea/templates/art
 ```
 Add the following lines starting at line 17 (just after .entry-content -->):
 ```
-<div id="content"></div>
+<div id="react-comments"></div>
 <script type="text/jsx" src="/theme/jsx/comments.jsx"></script>
 ```
 Remove all code starting at `{% if DISQUS_SITENAME` and ending at `{% endif %}`
@@ -153,7 +153,7 @@ var Comment = React.createClass({
 
 React.render(
   <CommentBox url="/sqlaccess" pollInterval={2000} />,
-  document.getElementById('content')
+  document.getElementById('react-comments')
 );
 ```
 
