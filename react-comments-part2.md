@@ -83,17 +83,26 @@ We are ready to test our new falcon file. The simplest way to do this is to POST
 curl -X POST "http://your-server-ip/sqlaccess" -H "Content-Type: application/json" -d'{"author":"Me","text":"Hello"}'
 ```
 
-If all went well, you should see a “comment posted” message. You can log into MySQL to verify that the comment was actually posted.
+If all went well, you should see a “comment posted” message. You can log into MySQL to verify that the comment was actually posted. You can also go to http://your-server-ip/sqlaccess in your browser to see the comment.
 
-Your react file should be stored in /usr/share/nginx/html/index.html. Because nginx comes with a default index.html, you should first remove it:
+It’s time for our actual comments system, React style! Your react file should be stored in /usr/share/nginx/html/index.html. Because NGINX comes with a default index.html, you should first remove it:
 ```
 rm /usr/share/nginx/html/index.html
 ```
 
-
+Create a new index.html file. This will hold all the React code.
 ```
 vim /usr/share/nginx/html/index.html
 ```
+The following code is explained in detail on [Facebook’s Tutorial](https://facebook.github.io/react/docs/tutorial.html)
+
+This code accomplishes five main goals:
+- A simple GUI of two text boxes and a submit button is created
+- The comments are updated in real time (every two seconds) from our MySQL server.
+- Comments are posted to our MySQL server whenever the ‘submit’ button is clicked. 
+- Comments are shown to the user before they are saved on the server to make it feel “fast”.
+- Markdown formatting support is added so users can write comments with markdown
+
 ```
 <!DOCTYPE html>
 <html>
@@ -202,7 +211,7 @@ var Comment = React.createClass({
 });
 
 React.render(
-  <CommentBox url="http://yourip/sqlaccess" pollInterval={2000} />,
+  <CommentBox url="http://your-server-ip/sqlaccess" pollInterval={2000} />,
   document.getElementById('content')
 );
     </script>
@@ -210,4 +219,21 @@ React.render(
 </html>
 ```
 
-Now browse to http://yourip
+>NOTE -- The above example must have ‘your-server-ip’ in the sixth last line replaced with your server’s ip.
+
+Our code differs from Facebook’s example in only one way. Facebook’s example uses the jQuery library to send POST requests and accept GET requests between the React code and the SQL server. For our use, jQuery is outdated so we used Superagent as a replacement. The Superagent section of code (the first two functions of CommentBox), was also only half as the original jQuery code.
+
+
+Now browse to http://your-server-ip. You should be able to submit comments and see them update in realtime. Timestamps should also automatically be added to your comments as they are posted!
+
+##Troubleshooting
+
+Parts One and Two of the React comments tutorials contain multiple layers of complexity. If you followed our examples word for word, your configuration should work as expected. However, problems may still arise because of unintentional (or intentional for fun!) mistakes. Here are a few troubleshooting tips that will help you diagnose your problem quicker.
+
+- If you receive a “502 Bad Gateway” error, this means that NGINX cannot find and/or communicate with uWSGI. You should check your NGINX and uWSGI configuration to verify that they are setup to communicate with each other correctly.
+
+- An “internal server error” usually indicates that NGINX and uWSGI are configured correctly, but there is a communication problem with MySQL. Check that MySQL authentication is working correctly and verify that the commands are being entered with proper syntax. 
+
+- React errors can be determined by using the “inspect element” feature in your browser. The console and network views will often give you direct error messages about your code.
+
+- If all else fails, stop uWSGI with `sudo supervisorctl stop uwsgi`. If you run `uwsgi --wsgi-file /usr/share/nginx/html/comments.py --callable app -s 127.0.0.1:8080` in your server’s command prompt, you will get verbose output as to what is happening in the background. Often, problems within your Falcon python code will pop up when using this method to troubleshoot. You can restart uWSGI with `sudo supervisorctl start uwsgi`.
