@@ -15,7 +15,7 @@ To recap, our comment system will operate like the following:
 ```
 Each individual component will be explained in detail in the remainder of the tutorials for this series.
 
-Configuring a SQL database
+##Configuring a SQL database
 
 SQL (Structured Language Query) is used to communicate with a database. It is the standard language for relational database management. Simply put, a database is a structured set of data usually arranged in tables of rows and columns. To create our database, we will be using MySQL: an open-source database management system.
 
@@ -82,14 +82,14 @@ To verify that our table was created, execute the “SHOW TABLES;” command:
 Your output should be similar to the following:
 ```
 mysql> SHOW TABLES;
-+------------------+
-| Tables_in_falcon |
-+------------------+
-| comments         |
-+------------------+
++-----------------------+
+| Tables_in_comments_db |
++-----------------------+
+| comments_table        |
++-----------------------+
 1 row in set (0.00 sec)
 ```
-You can see the format of the table with the “DESCRIBE comments;” command”
+You can see the format of the table with the “DESCRIBE comments_table;” command”
 ```
 mysql> DESCRIBE comments_table;
 +-----------+---------------+------+-----+-------------------+----------------+
@@ -104,7 +104,7 @@ mysql> DESCRIBE comments_table;
 ```
 To see the individual details of your table, use "SELECT * FROM comments;”
 ```
-mysql> SELECT * FROM comments;
+mysql> SELECT * FROM comments_table;
 Empty set (0.00 sec)
 ```
 Because there has not been data added to the table, the output will be “Empty set”
@@ -112,10 +112,12 @@ Because there has not been data added to the table, the output will be “Empty 
 (Additionally) 
 Although it is not required for this tutorial (we will be using falcon to add information), you can add data to the table with the following command:
 ```
-INSERT INTO `comments_table` (`id`,`comment`,`name`,`timestamp`) VALUES (NULL, "Hello!", "FalconLover", NULL);
+INSERT INTO `comments_table` (`comment`,`name`) VALUES ("Hello!", "FalconLover");
 ```
 Read more about MySQL [here](https://www.digitalocean.com/community/tutorials/a-basic-mysql-tutorial)
 Or [here](http://dev.mysql.com/doc/)
+
+*The MySQL database will not be used for the remainder of this tutorial. It will be used again when React Comments are put into use.*
 
 ##Falcon
 
