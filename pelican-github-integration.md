@@ -1,6 +1,7 @@
 Title: Pelican Github Integration
 Date: 2015-07-14 12:31
 Category: Tutorial
+Id: 010104
 
 #Pelican Blog and Github Integration
 
