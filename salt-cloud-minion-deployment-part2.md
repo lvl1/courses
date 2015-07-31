@@ -1,6 +1,7 @@
 Title: Salt tutorial part 2
 Date: 2015-07-08 11:45
 Category: Tutorial
+Id: 010102
 
 # Salt-Cloud (Part 2 of 3)
 
