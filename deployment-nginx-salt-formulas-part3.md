@@ -1,6 +1,7 @@
 Title: Salt tutorial part 3
 Date: 2015-07-08 11:45
 Category: Tutorial
+Id: 010103
 
 #Deployment of Nginx Using Salt Formulas (Part 3 of 3)
 
