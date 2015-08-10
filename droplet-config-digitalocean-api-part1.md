@@ -140,7 +140,7 @@ Simply change the yes to no:
 
 Save and exit by pressing “ESC” followed by entering “:wq” and then pressing return. Next, restart the ssh daemon
 
-`# /etc/init.d/sshd restart`
+`service ssh restart`
 
 Try to login to root. It should restrict you from doing so.
 
