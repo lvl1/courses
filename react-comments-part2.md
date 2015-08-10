@@ -68,7 +68,7 @@ The bottom three lines then add a route to the Falcon application at /sqlaccess 
 
 Because we created a new Falcon application at a new file location, we need to edit the supervisor configuration so that Falcon is started automatically.
 ```
-sudo vim /etc/supervisor/supervisor.conf:
+sudo vim /etc/supervisor/supervisord.conf:
 ```
 ```
 [program:uwsgi]
