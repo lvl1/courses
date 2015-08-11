@@ -1,7 +1,7 @@
 Title: SQL Master Slave
 Date: 2015-08-11 12:02
 Category: Tutorial
-Id: 010109
+Id: 010110
 
 
 #SQL Master Slave
