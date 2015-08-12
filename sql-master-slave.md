@@ -77,7 +77,7 @@ CREATE DATABASE comments_db;
 ```
 At linux prompt:
 ```
-mysql -u root -p comments_db < /path/to/comments_db.sql
+mysql -u root -p comments_db < comments_db.sql
 ```
 ```
 sudo vim /etc/mysql/my.cnf
