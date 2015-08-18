@@ -33,7 +33,7 @@ GRANT REPLICATION SLAVE ON *.* TO 'sql-slave'@'%' IDENTIFIED BY 'password';
 ```
 FLUSH PRIVILEGES;
 ```
-In current tab:
+In NEW terminal (this part is a little finnicky. It has to be done in a new terminal than the one used previous):
 ```
 USE comments_db
 ```
