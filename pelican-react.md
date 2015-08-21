@@ -19,7 +19,7 @@ sudo vim /usr/lib/python2.7/dist-packages/pelican/themes/notmyidea/static/css/ma
 ```
 > TIP -- Within vim, you can add line numbers by entering `:set number`
 
-On line 53, remove the line `padding: 0 1px;`
+On line 54, remove the line `padding: 0 1px;`
 This fixes some spacing issues in the comments.
 
 On line 421, replace `#comments-list blockquote {` with `#comments-list .comment {`.
