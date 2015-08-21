@@ -22,12 +22,12 @@ sudo vim /usr/lib/python2.7/dist-packages/pelican/themes/notmyidea/static/css/ma
 On line 53, remove the line `padding: 0 1px;`
 This fixes some spacing issues in the comments.
 
-On line 421, replace `#comments-list blockquote {` with `#comments-list .comment {`.
+On line 425, replace `#comments-list blockquote {` with `#comments-list .comment {`.
 In our React, we use the comment class for our comment text instead of the HTML5 blockquote tag. This increases compatibility with older browsers
 
-On line 434, replace `#comments-list li:nth-child(2n) blockquote {background: #F5f5f5;}` with `#comments-list li:nth-child(2n) .comment {background: #F5f5f5;}`
+On line 438, replace `#comments-list li:nth-child(2n) blockquote {background: #F5f5f5;}` with `#comments-list li:nth-child(2n) .comment {background: #F5f5f5;}`
 
-On line 439, replace `#add-comment input[type='email'],` with `#add-comment input[type='author'],`
+On line 443, replace `#add-comment input[type='email'],` with `#add-comment input[type='author'],`
 In our React, we name the input field for username ‘author’. This corrects the template looking for ‘email’.
 
 That is it for the main.css file. Now we need to add our comment system to the article configuration file.
