@@ -29,7 +29,7 @@ base:
   'minion1':
     - users
 ```
-This applies the user.sls pillar to minion1.
+This applies the users.sls pillar to minion1.
 
 In order to use our pillar file, we need to create a state that applies it. This state file will be called users.sls and will be located in /srv/salt/. If you completed the previous tutorial that configured the users.sls file, you will need replace that file with this new one. If you are starting fresh, then simply create the new file:
 
