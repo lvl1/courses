@@ -71,6 +71,13 @@ Now we need to have the master accept the minion's public keys:
 Now that we have accepted the minion, we can check that it responds. The `*` means "all minions" and can be substituted for any specific minion name:
 
     salt '*' test.ping
+    
+For minions not on the localhost:
+If your minion's key is accepted but it will not respond, try setting the following option in the 'minion' file on your minion:
+    'master_type: standard'
+    instead of 
+    'master_type: str'
+This is a regression in 2015.5.3 and has since been fixed, the fix will be in 2015.5.4
 
 ## Connect Master to DigitalOcean
 
