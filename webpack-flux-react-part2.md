@@ -96,6 +96,8 @@ We will create a few new files so our app folder will look like this:
 
 We want to have the minimum amount of files for Webpack to build at our "entry" point, otherwise it could affect performance.
 
+We will be using ES6 as the flux framework we will use is only available with ES6.
+
 Now let's create our .jsx files to show how we can link them together with ES6:
 
 #### list.jsx
@@ -113,7 +115,7 @@ export default class List extends React.Component {
 }
 ```
 
-This **list.jsx** file imports React and allows the List class to be imported by other files.
+This **list.jsx** file imports React and allows the List class to be imported by other files. This is how ES6 'requires' (We are used to seeing `var React = requires('react');`), and exports functions (instead of `module.exports = List;`\)
 
 #### app.jsx
 
@@ -210,7 +212,9 @@ To summarize, here is the idea behind redux:
 
 This model improves maintainability when we have more complex react applications, as the data can only flow one way, and the data is kept in the same place.
 
-Redux is a framework for react that uses ES6. Some nice things about Redux:
+For example, let's say you have state in a component in your applications hierarchy. You pass this state down your application hierarchy as props to the child components. Now you would like to edit the overall state of your application from one of the child components. You would like your entire hierarchy to be updated with the new state. Redux will allow us to do this.
+
+Redux is a framework for react that uses ES6. Some other nice things about Redux:
 
 -	Everything is hot-reloadable
 -	It preserves the benefits of Flux, but adds other nice properties thanks to its functional nature
@@ -221,7 +225,7 @@ Redux is a framework for react that uses ES6. Some nice things about Redux:
 
 If you're looking into a pure Flux framework check out the **Alt** framework.
 
-For a quick intro to Redux check out this [tutorial](https://github.com/happypoulp/redux-tutorial).
+For a quick intro to Redux check out this [tutorial](https://github.com/happypoulp/redux-tutorial), as well as the Redux documentation [here](https://rackt.github.io/redux/docs/introduction/index.html)
 
 Let's install redux and the redux development tools:
 
