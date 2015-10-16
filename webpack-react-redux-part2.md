@@ -210,10 +210,10 @@ Redux
 To summarize, here is the idea behind redux:
 
 ```
-  _________      _________       ___________  
- |         |    | Change  |     |   React   |
- |  Store  |----▶ events  |-----▶   Views   |
- |_________|    |_________|     |___________|
+__________      _________       ___________
+|         |    | Change  |     |   React   |
+|  Store  |----▶ events  |-----▶   Views   |
+|_________|    |_________|     |___________|
 
 ```
 
@@ -280,7 +280,7 @@ Now let's create our reducer:
 #### reducers.js
 
 ```javascript
-
+import { combineReducers } from 'redux';
 import { ADD_TODO } from './actions/list_actions';
 import addTodo from './actions/list_actions';
 
@@ -294,10 +294,20 @@ function todos(state = [], action) {
     return state;
   }
 }
-export default todos;
+
+const todoApp = combineReducers({
+  todos
+  //If you had another reducer, you would include it here.
+});
+
+export default todoApp;
 ```
 
-The reducer's job is to specify how the application's state will change depending on what action has happened. Since we only have one action so far that's all we've defined here in the reducer. In the "ADD_TODO" case within the `javascript switch` block, we return a *new* object containing the previous state array, plus a new object (`javascript text: action.text`). The `javascript default:`case is needed, otherwise our state may be lost if an unknown action occurs. Also, **do not mutate the state**, create a copy of it with `Object.assign()`.
+The reducer's job is to specify how the application's state will change depending on what action has happened. Since we only have one action so far that's all we've defined here in the reducer. In the "ADD_TODO" case within the `javascript switch` block, we return a *new* object containing the previous state array, plus a new object (`javascript text: action.text`). The `javascript default:`case is needed, otherwise our state may be lost if an unknown action occurs. Also, **do not mutate the state inside your reducer**, create a copy of it with `Object.assign()` instead and return that new object.
+
+The **combineReducers()** function allows us to have more than one reducer. Having more than one reducer is necessary if we want to split up global state, which you would want to do for large apps.
+
+> If you've never seen the spread operator (...state), check it out [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator)
 
 #### Store
 
@@ -314,18 +324,18 @@ The Store connects the actions and the reducers.
 
 ```javascript
 import React from 'react';
-import ReactDOM from 'react-dom';
 import App from './components/app.jsx';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import todos from './reducers';
+import todoApp from './reducers';
+import ReactDOM from 'react-dom';
 
 main();
 
 function main(){
   const app = document.createElement('div');
   document.body.appendChild(app);
-  const store = createStore(todos);
+  const store = createStore(todoApp);
   ReactDOM.render(
     <Provider store={store}>
     {<App />}
@@ -339,6 +349,179 @@ We want to have our store created at the top of our application's hierarchy. Thi
 
 Now we'll have to create new components and update our existing components to finish our Redux app, but before we get there we should understand the difference between "smart" and "dumb" components.
 
-smart/dumb components http://stackoverflow.com/questions/29577977/react-ref-and-setstate-not-working-with-es6
+Smart/Dumb Components
+---------------------
 
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator
+Redux advises that you separate your "smart" and "dumb" components. It is advisable to make only top-level components of your app aware of Redux. Components below should be "dumb" and receive all data as props. Our app will be pretty simple so we'll create one smart component(app.jsx), and the rest will be dumb. For more info on this check out the Redux doc [here](http://rackt.org/redux/docs/basics/UsageWithReact.html)
+
+Now we'll add some more components to our app:`
+- app/
+  - actions/
+    - list_actions.js
+  - components/
+    - app.jsx
+    - **todo.jsx**
+    - **todoform.jsx**
+    - **todolist.jsx**
+  - index.jsx
+  - reducers.js
+`
+
+Let's create our components with a top down approach:
+
+#### app.jsx
+
+```javascript
+import TodoForm from './todoform.jsx';
+import TodoList from './todolist.jsx';
+import { addTodo } from '../actions/list_actions';
+import { connect } from 'react-redux';
+import React, { Component, PropTypes } from 'react';
+
+class App extends React.Component {
+  render() {
+    const {dispatch, visibleTodos} = this.props;
+    return (
+      <div>
+        <h1>To Do List</h1>
+        <TodoForm onAddClick={text => dispatch(addTodo(text))}/>
+        <TodoList todos={visibleTodos}/>
+      </div>
+    );
+  }
+}
+App.PropTypes = {
+  visibleTodos: PropTypes.arrayOf(PropTypes.shape({
+    text: PropTypes.string.isRequired
+  }))
+};
+function select(state){
+  return {
+    visibleTodos: state.todos
+  };
+}
+export default connect (select)(App);
+```
+
+An important part is the **App.PropTypes** declaration. This tells the **App** class that an array will be required as props, with the shape described. **PropTypes.shape()** tells us that each element in the **visibleTodos** array will contain an object that looks like this: `{text: "aString"}`
+
+This will be our only smart component, so we will only dispatch actions from **app.jsx**. This means we will have to connect this file to redux. To do that we add the **connect()** function. Try to avoid using **connect()** too deeply in your hierachy, as it will make the data flow harder to trace. Any component wrapped with **connect()** will receive a dispatch function as a prop, and any state it needs from the global state. The only argument to **connect()** is a function called a **selector**. This function should take the global Redux store's state and return the props you need for the component.
+
+Here, **connect()** passes the state from store to the select function, and makes it available for **App**.
+
+Since we've used **combineReducers()** in our **reducers.js** let's look at what the output of a `console.log(state);` would look like within our **select(state)** function:
+
+```javascript
+function select(state){
+  console.log(state);
+  return {
+    visibleTodos: state.todos
+  };
+}
+```
+
+Would print:
+
+```
+Object {todos: Array[0]}
+```
+
+This may not work for you just yet, as you haven't finished writing the rest of the components, but the idea is to show that state is already defined via your reducer, which could be a difficult concept to grasp if you are new to javascript.
+
+> Make sure you understand how the state is being passed down via **connect(select)(App)**
+
+Let define the rest of our components:
+
+#### todoform.jsx
+
+```javascript
+import addTodo from '../actions/list_actions';
+
+export default class TodoForm extends React.Component {
+
+  constructor(){
+    super();
+    this.handleClick = this.handleClick.bind(this);
+    /*findDOMNode will not be able to read 'refs' without this bind more on this [here](http://stackoverflow.com/questions/29577977/react-ref-and-setstate-not-working-with-es6)
+    */
+  }
+
+  handleClick(e){
+
+    var node = ReactDOM.findDOMNode(this.refs.input);
+    if (!node.value){
+      return false;
+    }
+    var text = node.value.trim();
+    this.props.onAddClick(text);
+    node.value = '';
+
+  }
+
+  render() {
+    return (
+      <div>
+        <input type="text"
+          ref="input"/>
+        <button onClick={this.handleClick}>Add Item</button>
+      </div>
+    );
+  }
+}
+
+TodoForm.PropTypes = {
+  onAddClick: PropTypes.func.isRequired
+};
+```
+
+#### todolist.jsx
+
+```javascript
+import React, { Component, PropTypes } from 'react';
+import { createStore } from 'redux';
+import todoApp  from '../reducers';
+import addTodo from '../actions/list_actions';
+import Todo from './todo.jsx';
+export default class TodoList extends React.Component {
+
+  render(){
+    var todos = this.props.todos.map(function(todoObj, index){
+      return(
+        <Todo todo={todoObj.text} key={index} />
+      );
+    });
+
+    return(
+      <div>
+        <ul>
+          {todos}
+        </ul>
+      </div>
+    );
+  }
+}
+TodoList.PropTypes = {
+  todos: PropTypes.arrayOf(PropTypes.shape({
+    text: PropTypes.string.isRequired
+  }).isRequired).isRequired
+};
+```
+
+#### todo.jsx
+
+```javascript
+import React, { Component, PropTypes } from 'react';
+
+export default class Todo extends Component {
+  render() {
+    return (
+      <li>
+        {this.props.todo}
+      </li>
+    );
+  }
+}
+Todo.PropTypes = {
+  todo: PropTypes.string.isRequired
+};
+```
