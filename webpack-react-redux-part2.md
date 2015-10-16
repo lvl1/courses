@@ -430,7 +430,7 @@ This may not work for you just yet, as you haven't finished writing the rest of 
 
 > Make sure you understand how the state is being passed down via **connect(select)(App)**
 
-Let define the rest of our components:
+Let define the rest of our "dumb" components:
 
 #### todoform.jsx
 
@@ -525,3 +525,5 @@ Todo.PropTypes = {
   todo: PropTypes.string.isRequired
 };
 ```
+
+When you run `npm start` inside your project's root directory and enter **localhost:8080** in your browser you should see the title, and input. Try adding a todo item.
