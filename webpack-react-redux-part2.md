@@ -100,39 +100,45 @@ We will be using ES6 as the flux framework we will use is only available with ES
 
 Now let's create our .jsx files to show how we can link them together with ES6:
 
-#### list.jsx
+#### todoform.jsx
 
 ```javascript
 import React from 'react';
-export default class List extends React.Component {
+
+export default class TodoForm extends React.Component {
+
   render() {
     return (
       <div>
-        <h1>To Do List</h1>
+        <input type="text" />
+        <button>Add Item</button>
       </div>
     );
   }
 }
 ```
 
-This **list.jsx** file imports React and allows the List class to be imported by other files. This is how ES6 'requires' (We are used to seeing `var React = requires('react');`), and exports functions (instead of `module.exports = List;`\)
+This **todoForm.jsx** file imports React and allows the TodoForm class to be imported by other files. This is how ES6 'requires' (We are used to seeing `var React = requires('react');`), and exports functions (instead of `module.exports = List;`\)
 
 #### app.jsx
 
 ```javascript
 import React from 'react';
-import List from './list.jsx'
+import TodoForm from './todoform.jsx'
 
 export default class App extends React.Component {
   render() {
-    return (<List />);
+    return (
+      <h1>To Do List</h1>
+      <TodoForm />
+    );
   }
 }
 ```
 
 Nothing new here in **app.jsx** other than importing the file we created previously.
 
-Now we'll write **index.jsx** to require **app.jsx** which will then call **list.jsx**
+Now we'll write **index.jsx** to require **app.jsx** which will then call **todoform.jsx**
 
 #### index.jsx
 
@@ -208,6 +214,7 @@ To summarize, here is the idea behind redux:
  |         |    | Change  |     |   React   |
  |  Store  |----▶ events  |-----▶   Views   |
  |_________|    |_________|     |___________|
+
 ```
 
 This model improves maintainability when we have more complex react applications, as the data can only flow one way, and the data is kept in the same place.
@@ -233,15 +240,105 @@ Let's install redux and the redux development tools:
 npm install --save redux
 npm install --save react-redux
 npm install --save-dev redux-devtools
+npm install --save-dev react-dom
 ```
 
-Now let's start using it. Create another directory inside of your app/ directory called stores/ with a new js file inside:
+Now let's start using it. Create another directory inside of your app/ directory called actions/ with a new js file inside:
 
 ```
 -app/
   -components/
     -app.jsx
     -list.jsx
-  **stores/**
-    **list_store.js**
+  **actions/**
+    **list_actions.js**
 ```
+
+Actions are quite simple in Redux. First we will create our most basic case which is to add a "todo" item. Calling this action will tell the store to update the state with a new todo item.
+
+#### list_actions.js
+
+```javascript
+//Action Type
+export const ADD_TODO = 'ADD_TODO';
+
+//Action Creator
+export function addTodo(text){
+  return {
+    type: ADD_TODO,
+    text
+  };
+}
+```
+
+Actions are merely payloads of information that your React views can send to your store. All actions must have a **type** property that will indicate the action being performed. Types should typically be defined as string constants.
+
+An action creator is merely a function that creates an action. All the action creator should do is return an action, with no side-effects.
+
+Now let's create our reducer:
+
+#### reducers.js
+
+```javascript
+
+import { ADD_TODO } from './actions/list_actions';
+import addTodo from './actions/list_actions';
+
+function todos(state = [], action) {
+  switch (action.type) {
+  case ADD_TODO:
+    return [...state, {
+      text: action.text
+    }];
+  default:
+    return state;
+  }
+}
+export default todos;
+```
+
+The reducer's job is to specify how the application's state will change depending on what action has happened. Since we only have one action so far that's all we've defined here in the reducer. In the "ADD_TODO" case within the `javascript switch` block, we return a *new* object containing the previous state array, plus a new object (`javascript text: action.text`). The `javascript default:`case is needed, otherwise our state may be lost if an unknown action occurs. Also, **do not mutate the state**, create a copy of it with `Object.assign()`.
+
+#### Store
+
+The Store does the following:
+
+-	Holds application state
+-	Allows access to state via `getState()`
+-	Allows state to be updated `via dispatch(action)`
+-	Registers listeners via `subscribe(listener)`
+
+The Store connects the actions and the reducers.
+
+#### index.jsx
+
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './components/app.jsx';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import todos from './reducers';
+
+main();
+
+function main(){
+  const app = document.createElement('div');
+  document.body.appendChild(app);
+  const store = createStore(todos);
+  ReactDOM.render(
+    <Provider store={store}>
+    {<App />}
+    </Provider>,
+    app
+  );
+}
+```
+
+We want to have our store created at the top of our application's hierarchy. This way when the store is updated all the appropriate child branches props are updated as well.
+
+Now we'll have to create new components and update our existing components to finish our Redux app, but before we get there we should understand the difference between "smart" and "dumb" components.
+
+smart/dumb components http://stackoverflow.com/questions/29577977/react-ref-and-setstate-not-working-with-es6
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator
