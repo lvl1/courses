@@ -188,3 +188,56 @@ npm start
 ```
 
 In your browser enter **127.0.0.1:8080**, then make changes to the "Hello World" string in **component.js**. It should update the string in your browser as you edit the string and save it in **component.js**.
+
+Setting Up Configuration Target For npm start
+---------------------------------------------
+
+Install webpack-merge to share configuration between targets.
+
+```bash
+npm i webpack-merge --save-dev
+```
+
+This will detect npm lifecycle events (start, build, etc.) and branch and merge based on that.
+
+Now we have to require this inside our config. We will also include sourcemaps to improve debugging:
+
+#### webpack.config.js
+
+```javascript
+var path = require('path');
+var HtmlwebpackPlugin = require('html-webpack-plugin');
+var webpack = require('webpack');
+var merge = require('webpack-merge');
+
+var TARGET = process.env.npm_lifecycle_event;
+var ROOT_PATH = path.resolve(__dirname);
+var APP_PATH = path.resolve(ROOT_PATH, 'app');
+var BUILD_PATH = path.resolve(ROOT_PATH, 'build');
+
+var common = {
+  entry: APP_PATH,
+  output: {
+    path: BUILD_PATH,
+    filename: 'bundle.js'
+  },
+  ...
+};
+
+if(TARGET === 'start' || !TARGET) {
+  module.exports = merge(common, {
+    devtool: 'eval-source-map',
+    devServer: {
+      historyApiFallback: true,
+      hot: true,
+      inline: true,
+      progress: true
+    },
+    plugins: [
+      new webpack.HotModuleReplacementPlugin()
+    ]
+  });
+}
+```
+
+More info on sourcemaps and this configuration [here](http://survivejs.com/webpack_react/developing_with_webpack/)
